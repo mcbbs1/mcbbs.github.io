@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+    <title>《MC整合包》+ PCL启动器 · 免费下载</title>
+
+    <!-- Google Fonts + Font Awesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+    <style>
+        /* ===== 全局重置 & 基础 ===== */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0b0719;
+            --accent-cyan: #00e5ff;
+            --accent-purple: #a855f7;
+            --accent-pink: #ec4899;
+            --text-light: #f0f0f5;
+            --text-muted: #a8a6c0;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --radius-lg: 28px;
+            --radius-md: 16px;
+            --glow-cyan: 0 0 40px rgba(0, 229, 255, 0.3);
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+            margin: 0;
+        }
+
+        /* ===== 星空背景 ===== */
+        #stars-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration, 3s) ease-in-out infinite alternate;
+            opacity: 0.3;
+            width: var(--size, 2px);
+            height: var(--size, 2px);
+        }
+        @keyframes twinkle {
+            0% { opacity: 0.15; transform: scale(0.8); }
+            100% { opacity: 0.9; transform: scale(1.2); }
+        }
+
+        /* ===== 光晕装饰 ===== */
+        .glow-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.2;
+            pointer-events: none;
+            z-index: 0;
+            animation: floatOrb 12s ease-in-out infinite alternate;
+        }
+        .glow-orb--1 {
+            width: 500px; height: 500px;
+            background: var(--accent-purple);
+            top: -10%; right: -10%;
+        }
+        .glow-orb--2 {
+            width: 400px; height: 400px;
+            background: var(--accent-cyan);
+            bottom: -10%; left: -10%;
+            animation-delay: 3s;
+        }
+        @keyframes floatOrb {
+            0% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -40px) scale(1.1); }
+            66% { transform: translate(-20px, 30px) scale(0.9); }
+            100% { transform: translate(10px, -10px) scale(1.05); }
+        }
+
+        /* ===== 主容器 ===== */
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 30px 24px 40px;
+            background: rgba(11, 7, 25, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+        }
+
+        /* ===== 头部徽章（居中） ===== */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, rgba(0, 229, 255, 0.15), rgba(168, 85, 247, 0.15));
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            padding: 6px 18px 6px 14px;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            backdrop-filter: blur(4px);
+        }
+        .badge i {
+            font-size: 0.7rem;
+        }
+
+        /* ===== 标题区（居中） ===== */
+        .hero {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .hero h1 {
+            font-family: 'Orbitron', 'Noto Sans SC', sans-serif;
+            font-size: 2.8rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #fff 20%, var(--accent-cyan) 80%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            text-shadow: 0 0 40px rgba(0, 229, 255, 0.15);
+            line-height: 1.1;
+        }
+        .hero .sub {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+            font-weight: 400;
+            letter-spacing: 2px;
+        }
+        .hero .sub span {
+            color: var(--accent-cyan);
+            font-weight: 700;
+        }
+
+        /* ===== 双列布局 ===== */
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            margin-top: 10px;
+        }
+        .col {
+            flex: 1 1 calc(50% - 12px);
+            min-width: 260px;
+        }
+
+        /* ===== 下载卡片（通用） ===== */
+        .download-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-md);
+            padding: 24px 18px 20px;
+            backdrop-filter: blur(4px);
+            transition: box-shadow 0.3s;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .download-card:hover {
+            box-shadow: var(--glow-cyan);
+        }
+
+        .download-card .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            font-size: 1.4rem;
+            font-weight: 900;
+            background: linear-gradient(to right, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .download-card .card-header i {
+            font-size: 1.6rem;
+            color: var(--accent-cyan);
+            filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.3));
+            -webkit-text-fill-color: initial;
+        }
+
+        .qr-box {
+            width: 180px;
+            height: 180px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            transition: transform 0.25s;
+            margin-bottom: 12px;
+        }
+        .qr-box:hover {
+            transform: scale(1.02);
+        }
+        .qr-box img {
+            width: 155px;
+            height: 155px;
+            display: block;
+            border-radius: 12px;
+        }
+
+        .qr-caption {
+            text-align: center;
+            width: 100%;
+        }
+        .qr-caption .main-tip {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+        }
+        .qr-caption .main-tip i {
+            color: var(--accent-cyan);
+            margin-right: 6px;
+        }
+
+        .expiry-warning {
+            display: inline-block;
+            background: rgba(236, 72, 153, 0.12);
+            border: 1px solid rgba(236, 72, 153, 0.25);
+            padding: 6px 18px;
+            border-radius: 60px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #f9a8d4;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 0 30px rgba(236, 72, 153, 0.08);
+            margin-top: 6px;
+        }
+        .expiry-warning i {
+            margin-right: 8px;
+            color: var(--accent-pink);
+        }
+
+        /* ===== 超链接按钮 ===== */
+        .btn-link {
+            display: inline-block;
+            margin-top: 16px;
+            padding: 10px 28px;
+            border-radius: 60px;
+            background: linear-gradient(135deg, rgba(0, 229, 255, 0.15), rgba(168, 85, 247, 0.15));
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            color: var(--accent-cyan);
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: all 0.3s;
+            letter-spacing: 1px;
+            backdrop-filter: blur(4px);
+        }
+        .btn-link i {
+            margin-right: 8px;
+        }
+        .btn-link:hover {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            color: #0b0719;
+            box-shadow: 0 0 30px rgba(0, 229, 255, 0.4);
+            transform: translateY(-2px);
+            border-color: transparent;
+        }
+
+        /* ===== 底部 ===== */
+        .footnote {
+            margin-top: 32px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.25);
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            padding-top: 20px;
+        }
+        .footnote i {
+            margin-right: 4px;
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 700px) {
+            .col {
+                flex: 1 1 100%;
+            }
+            .container { padding: 20px 16px 30px; }
+            .hero h1 { font-size: 2.2rem; }
+            .download-card .card-header { font-size: 1.2rem; }
+            .qr-box { width: 150px; height: 150px; }
+            .qr-box img { width: 130px; height: 130px; }
+            .expiry-warning { font-size: 0.75rem; padding: 4px 14px; }
+            .btn-link { padding: 8px 22px; font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== 星空 ===== -->
+    <div id="stars-canvas"></div>
+
+    <!-- ===== 光晕 ===== -->
+    <div class="glow-orb glow-orb--1"></div>
+    <div class="glow-orb glow-orb--2"></div>
+
+    <!-- ===== 主容器 ===== -->
+    <div class="container">
+
+        <!-- 徽章（居中） -->
+        <div style="text-align: center;">
+            <div class="badge">
+                <i class="fas fa-bolt"></i> 免费整合包
+            </div>
+        </div>
+
+        <!-- 标题 -->
+        <div class="hero">
+            <h1>《MC整合包》</h1>
+            <div class="sub">完整资源整合包 · <span>免费下载</span></div>
+        </div>
+
+        <!-- ===== 双列内容 ===== -->
+        <div class="row">
+
+            <!-- 左列：异宠乱斗整合包 -->
+            <div class="col">
+                <div class="download-card">
+                    <div class="card-header">
+                        <i class="fas fa-dragon"></i> 游戏整合包
+                    </div>
+                    <div class="qr-box">
+                        <img src="qrcode.png" alt="异宠乱斗二维码" />
+                    </div>
+                    <div class="qr-caption">
+                        <p class="main-tip"><i class="fas fa-mobile-alt"></i> 手机扫码转存，下载速度更快</p>
+                        <div class="expiry-warning">
+                            <i class="fas fa-clock"></i> 文件容易失效，请尽快保存
+                        </div>
+                    </div>
+                    <!-- 超链接：请替换 href 为实际下载页面地址 -->
+                    <a href="https://pan.quark.cn/s/86ad82d2b022" class="btn-link" target="_blank"><i class="fas fa-external-link-alt"></i> 点击下载</a>
+                </div>
+            </div>
+
+            <!-- 右列：PCL启动器下载 -->
+            <div class="col">
+                <div class="download-card">
+                    <div class="card-header">
+                        <i class="fas fa-rocket"></i> PCL启动器
+                    </div>
+                    <div class="qr-box">
+                        <img src="pcl-qrcode.png" alt="PCL启动器二维码" />
+                    </div>
+                    <div class="qr-caption">
+                        <p class="main-tip"><i class="fas fa-mobile-alt"></i> 扫码下载 PCL 启动器</p>
+                        <div class="expiry-warning" style="background: rgba(0,229,255,0.08); border-color: rgba(0,229,255,0.2); color: #80e0ff;">
+                            <i class="fas fa-download"></i> 最新版本 · 稳定可用
+                        </div>
+                    </div>
+                    <!-- 超链接：请替换 href 为 PCL 官网地址 -->
+                    <a href="https://pan.quark.cn/s/2d867f2c0c9d" class="btn-link" target="_blank"><i class="fas fa-external-link-alt"></i> 点击下载PCL启动器</a>
+                </div>
+            </div>
+
+        </div><!-- /row -->
+
+        <!-- 底部 -->
+        <div class="footnote">
+            <i class="fas fa-shield-alt"></i> 资源持续更新 · 请关注最新版本
+        </div>
+
+    </div>
+
+    <!-- ===== 生成星星 ===== -->
+    <script>
+        (function createStars() {
+            const canvas = document.getElementById('stars-canvas');
+            const count = 140;
+            for (let i = 0; i < count; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                const size = Math.random() * 3 + 1.5;
+                star.style.setProperty('--size', size + 'px');
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.setProperty('--duration', (Math.random() * 4 + 2) + 's');
+                star.style.animationDelay = (Math.random() * 5) + 's';
+                canvas.appendChild(star);
+            }
+        })();
+    </script>
+
+</body>
+</html>
